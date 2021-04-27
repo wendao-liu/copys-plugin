@@ -1,18 +1,47 @@
 const path = require('path');
 const fs = require('fs');
+module.exports = class CpPlugin {
+    constructor(options) {
+        this.options = options;
+    }
+    apply(compiler) {
+        compiler.hooks.done.tap(
+            'CpPlugin',
+            (status) => {
+                const { from, to, pub } = this.options || {};
+                const projectRoot = process.cwd();
+                copyDir(
+                    path.join(projectRoot, from),
+                    path.join(projectRoot, to),
+                    pub,
+                    function (err) {
+                        if (err) {
+                            console.log('编译失败！');
+                        } else {
+                            console.log('编译成功！');
+                        }
+                    }
+                )
+            }
+        );
+    }
+}
+
+
 
 /*
  * 复制目录、子目录，及其中的文件
  * @param src {String} 要复制的目录
  * @param dist {String} 复制到目标目录
  */
-function copyDir(src, dist, callback) {
+function copyDir(src, dist, pub, callback) {
     fs.access(dist, function (err) {
         if (err) {
             // 目录不存在时创建目录
             fs.mkdirSync(dist);
+            fs.mkdirSync(dist + '/' + pub);
         }
-        _copy(null, src, dist);
+        _copy(null, src, dist + '/' + pub);
     });
 
     function _copy(err, src, dist) {
@@ -43,26 +72,5 @@ function copyDir(src, dist, callback) {
                 }
             })
         }
-    }
-}
-module.exports = class CpPlugin {
-    constructor(options) {
-        this.options = options;
-    }
-    apply(compiler) {
-        compiler.hooks.done.tap(
-            'CpPlugin',
-            (status) => {
-                const { from, to } = this.options || {};
-                console.log(from, to, 'from, to');
-                copyDir(from, to, function (err) {
-                    if (err) {
-                        console.log('编译失败！');
-                    } else {
-                        console.log('编译成功！');
-                    }
-                })
-            }
-        );
     }
 }
