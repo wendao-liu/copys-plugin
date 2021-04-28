@@ -1,6 +1,6 @@
 {
   "name": "copys-plugin",
-  "version": "1.0.1",
+  "version": "1.0.7",
   "main": "main/copys-plugin.js",
   "files": [
     "main/"
@@ -20,5 +20,8 @@
   },
   "devDependencies": {
     "fs": "^0.0.1-security"
+  },
+  "dependencies": {
+    "rimraf": "^3.0.2"
   }
 }
